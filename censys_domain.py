@@ -9,6 +9,7 @@ class Module(BaseModule):
         'author': 'J Nazario',
         'description': 'Retrieves the MX records, SMTPS, POP3S, and HTTPS for a domain. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, domains):

@@ -9,6 +9,7 @@ class Module(BaseModule):
         'author': 'J Nazario',
         'description': 'Harvests hosts and ports from the Censys API by using the \'ip\' search operator. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT netblock FROM netblocks WHERE netblock IS NOT NULL',
+        'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, netblocks):

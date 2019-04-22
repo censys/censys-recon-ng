@@ -20,6 +20,7 @@ class Module(BaseModule):
         'author': 'J Nazario',
         'description': 'Retrieves the open ports for each host. Updates the \'ports\' table with the results.',
         'query': 'SELECT DISTINCT ip_address FROM hosts WHERE ip_address IS NOT NULL',
+        'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, hosts):

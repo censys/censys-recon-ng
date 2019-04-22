@@ -9,6 +9,7 @@ class Module(BaseModule):
         'author': 'J Nazario',
         'description': 'Retrieves the TLS certificates for a domain. Updates the \'companies\' table with the values from the subject organization information.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, domains):

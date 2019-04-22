@@ -9,6 +9,7 @@ class Module(BaseModule):
         'author': 'J Nazario',
         'description': 'Harvests hosts from the Censys.IO API by using the \'autonomous_system.organization\' search operator. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
+        'required_keys': ['censysio_id', 'censysio_secret'],        
     }
 
     def module_run(self, companies):

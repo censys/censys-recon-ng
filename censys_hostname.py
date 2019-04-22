@@ -9,6 +9,7 @@ class Module(BaseModule):
         'author': 'J Nazario',
         'description': 'Finds all IPs for a given hostname. Updates the "hosts" and "ports" tables.',
         'query': 'SELECT DISTINCT host FROM hosts WHERE host IS NOT NULL',
+        'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, hosts):
