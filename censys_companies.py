@@ -31,7 +31,7 @@ class Module(BaseModule):
         for domain in domains:
             self.heading(domain, level=0)
             try:
-                query = 'mx:{0} OR '.format(domain) + ' OR '.join([ '{0}:"{1}"'.format(x, domain) for x in SEARCH_FIELDS ])
+                query = 'mx:"{0}" OR '.format(domain) + ' OR '.join([ '{0}:"{1}"'.format(x, domain) for x in SEARCH_FIELDS ])
                 payload = c.search(query, IPV4_FIELDS) 
             except CensysException:
                 continue
