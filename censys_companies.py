@@ -17,17 +17,22 @@ class Module(BaseModule):
         api_secret = self.get_key('censysio_secret')
         c = CensysIPv4(api_id, api_secret)
         IPV4_FIELDS = [ '443.https.tls.certificate.parsed.subject.organization',
-                        '25.smtp.starttls.tls.certificate.parsed.subject.organization', 
-                        '465.smtp.tls.tls.certificate.parsed.subject.organization', 
-                        '587.smtp.starttls.tls.certificate.parsed.subject.organization',]
+                        '25.smtp.starttls.tls.certificate.parsed.subject.organization',
+                        '465.smtp.tls.tls.certificate.parsed.subject.organization',
+                        '587.smtp.starttls.tls.certificate.parsed.subject.organization',
+                        '1521.oracle.banner.tls.certificate.parsed.subject.organization',
+                        '3306.mysql.banner.tls.certificate.parsed.subject.organizationn',
+                        '3389.rdp.banner.tls.certificate.parsed.subject.organization',
+                        '5432.postgres.banner.tls.certificate.parsed.subject.organization',
+                        '8883.mqtt.banner.tls.certificate.parsed.subject.organization',]
         SEARCH_FIELDS = ['443.https.tls.certificate.parsed.names',
                          '25.smtp.starttls.tls.certificate.parsed.names',
                          '110.pop3.starttls.tls.certificate.parsed.names',]
         for domain in domains:
             self.heading(domain, level=0)
             try:
-                query = ' OR '.join([ '{0}:"{1}"'.format(x, domain) for x in SEARCH_FIELDS ])
-                payload = c.search('mx:{0} OR ' + query, IPV4_FIELDS) ]
+                query = 'mx:{0} OR '.format(domain) + ' OR '.join([ '{0}:"{1}"'.format(x, domain) for x in SEARCH_FIELDS ])
+                payload = c.search(query, IPV4_FIELDS) 
             except CensysException:
                 continue
             for result in payload:
