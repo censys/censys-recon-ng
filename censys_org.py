@@ -20,14 +20,14 @@ class Module(BaseModule):
         for company in companies:
             self.heading(company, level=0)
             try:
-                payload = [ x for x in c.search('autonomous_system.organization:{0}'.format(company), IPV4_FIELDS) ]
+                payload = [ x for x in c.search('autonomous_system.organization:"{0}"'.format(company), IPV4_FIELDS) ]
             except CensysException:
                 continue
             for result in payload:
                 self.add_hosts(ip_address=result['ip'], 
-                               country=result['location.country'],
-                               latitude=result['location.latitude'], 
-                               longitude=result['location.longitude'])
+                               country=result.get('location.country', ''),
+                               latitude=result.get('location.latitude', ''), 
+                               longitude=result.get('location.longitude', ''))
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
                     self.add_ports(ip_address=result['ip'], port=port, protocol=service)
