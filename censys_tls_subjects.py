@@ -24,14 +24,22 @@ class Module(BaseModule):
                         '443.https.tls.certificate.parsed.names',
                         '25.smtp.starttls.tls.certificate.parsed.names', 
                         '110.pop3.starttls.tls.certificate.parsed.names',
-                        '443.https.tls.certificate.parsed.subject.organization',
-                        '25.smtp.starttls.tls.certificate.parsed.subject.organization', 
-                        '465.smtp.tls.tls.certificate.parsed.subject.organization', 
-                        '587.smtp.starttls.tls.certificate.parsed.subject.organization',]
+                       ]
+        SEARCH_FIELDS = [ '443.https.tls.certificate.parsed.subject.organization',
+                          '25.smtp.starttls.tls.certificate.parsed.subject.organization',
+                          '465.smtp.tls.tls.certificate.parsed.subject.organization',
+                          '587.smtp.starttls.tls.certificate.parsed.subject.organization',
+                          '1521.oracle.banner.tls.certificate.parsed.subject.organization',
+                          '3306.mysql.banner.tls.certificate.parsed.subject.organizationn',
+                          '3389.rdp.banner.tls.certificate.parsed.subject.organization',
+                          '5432.postgres.banner.tls.certificate.parsed.subject.organization',
+                          '8883.mqtt.banner.tls.certificate.parsed.subject.organization',
+                          ]
         for company in companies:
             self.heading(company, level=0)
             try:
-                payload = c.search('443.https.tls.certificate.parsed.subject.organization:"{0}" OR 25.smtp.starttls.tls.certificate.parsed.subject.organization:"{0}" OR 465.smtp.tls.tls.certificate.parsed.subject.organization:"{0}" OR 587.smtp.starttls.tls.certificate.parsed.subject.organization:"{0}"'.format(company), IPV4_FIELDS)
+                query = ' OR '.join([ '%{0}:"{1}"'.format(x, company) for x in SEARCH_FIELDS ])
+                payload = c.search(query, IPV4_FIELDS)
             except CensysException:
                 continue
             for result in payload:
