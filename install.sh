@@ -1,3 +1,6 @@
+mkdir -p ~/.recon-ng/modules/recon/companies-domains
+cp censys_subdomains.py ~/.recon-ng/modules/recon/companies-domains
+
 mkdir -p ~/.recon-ng/modules/recon/companies-hosts
 cp censys_org.py ~/.recon-ng/modules/recon/companies-hosts
 cp censys_tls_subjects.py ~/.recon-ng/modules/recon/companies-hosts
