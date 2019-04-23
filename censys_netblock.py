@@ -5,7 +5,7 @@ from censys.base import CensysException
 
 class Module(BaseModule):
     meta = {
-        'name': 'Censys Hosts by Netblock',
+        'name': 'Censys hosts by netblock',
         'author': 'J Nazario',
         'description': 'Harvests hosts and ports from the Censys API by using the \'ip\' search operator. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT netblock FROM netblocks WHERE netblock IS NOT NULL',

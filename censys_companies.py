@@ -5,7 +5,7 @@ from censys.base import CensysException
 
 class Module(BaseModule):
     meta = {
-        'name': 'Censys Companies by Domain',
+        'name': 'Censys companies by domain',
         'author': 'J Nazario',
         'description': 'Retrieves the TLS certificates for a domain. Updates the \'companies\' table with the values from the subject organization information.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',

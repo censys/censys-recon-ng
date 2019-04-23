@@ -5,7 +5,7 @@ from censys.base import CensysException
 
 class Module(BaseModule):
     meta = {
-        'name': 'Censys Hosts by Name',
+        'name': 'Censys hosts by hostname',
         'author': 'J Nazario',
         'description': 'Finds all IPs for a given hostname. Updates the "hosts" and "ports" tables.',
         'query': 'SELECT DISTINCT host FROM hosts WHERE host IS NOT NULL',

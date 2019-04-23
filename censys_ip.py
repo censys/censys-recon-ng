@@ -16,9 +16,9 @@ def grouper(n, iterable):
 
 class Module(BaseModule):
     meta = {
-        'name': 'Censys Ports by IP',
+        'name': 'Censys ports by IP',
         'author': 'J Nazario',
-        'description': 'Retrieves the open ports for each host. Updates the \'ports\' table with the results.',
+        'description': 'Retrieves the open ports for each IP address. Updates the \'ports\' table with the results.',
         'query': 'SELECT DISTINCT ip_address FROM hosts WHERE ip_address IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],
     }
