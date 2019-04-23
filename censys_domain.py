@@ -5,9 +5,9 @@ from censys.base import CensysException
 
 class Module(BaseModule):
     meta = {
-        'name': 'Censys Hosts and Subdomains by Domain',
+        'name': 'Censys hosts and subdomains by domain',
         'author': 'J Nazario',
-        'description': 'Retrieves the MX records, SMTPS, POP3S, and HTTPS for a domain. Updates the \'hosts\' and the \'ports\' tables with the results.',
+        'description': 'Retrieves the MX, SMTPS, POP3S, and HTTPS records for a domain. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],
     }
@@ -17,14 +17,15 @@ class Module(BaseModule):
         api_secret = self.get_key('censysio_secret')
         c = CensysIPv4(api_id, api_secret)
         IPV4_FIELDS = [ 'ip', 'protocols', 'location.country', 
-                        'location.latitude', 'location.longitude',
-                        '443.https.tls.certificate.parsed.names',
-                        '25.smtp.starttls.tls.certificate.parsed.names', 
-                        '110.pop3.starttls.tls.certificate.parsed.names']          
+                        'location.latitude', 'location.longitude',]
+        SEARCH_FIELDS = ['443.https.tls.certificate.parsed.names',
+                         '25.smtp.starttls.tls.certificate.parsed.names', 
+                         '110.pop3.starttls.tls.certificate.parsed.names']          
         for domain in domains:
             self.heading(domain, level=0)
             try:
-                payload = [ x for x in c.search('mx:{0} OR 443.https.tls.certificate.parsed.names:{0} OR 25.smtp.starttls.tls.certificate.parsed.names:{0} OR 110.pop3.starttls.tls.certificate.parsed.names:{0}'.format(domain), IPV4_FIELDS) ]
+                query = 'mx:"{0}" OR '.format(domain) + ' OR '.join([ '{0}:"{1}"'.format(x, domain) for x in SEARCH_FIELDS ])
+                payload = c.search(query, IPV4_FIELDS) 
             except CensysException:
                 continue
             for result in payload:
