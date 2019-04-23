@@ -21,7 +21,7 @@ class Module(BaseModule):
         for host in hosts:
             self.heading(host, level=0)
             try:
-                payload = [ x for x in c.search('a:{0}'.format(host), IPV4_FIELDS) ]
+                payload = c.search('a:{0}'.format(host), IPV4_FIELDS)
             except CensysException:
                 continue
             for result in payload:

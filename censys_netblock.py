@@ -21,7 +21,7 @@ class Module(BaseModule):
         for netblock in netblocks:
             self.heading(netblock, level=0)
             try:
-                payload = [ x for x in c.search('ip:{0}'.format(netblock), IPV4_FIELDS) ]
+                payload = c.search('ip:{0}'.format(netblock), IPV4_FIELDS)
             except CensysException:
                 continue
             for result in payload:
