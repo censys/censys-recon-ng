@@ -22,6 +22,7 @@ These are normal recon-ng modules, use them like any other. Pivot away! This rep
 
 	  Recon
 	  -----
+	    recon/companies-domains/censys_subdomains
 	    recon/companies-hosts/censys_org
 	    recon/companies-hosts/censys_tls_subjects
 	    recon/domains-companies/censys_companies
