@@ -38,7 +38,7 @@ class Module(BaseModule):
         for company in companies:
             self.heading(company, level=0)
             try:
-                query = ' OR '.join([ '%{0}:"{1}"'.format(x, company) for x in SEARCH_FIELDS ])
+                query = ' OR '.join([ '{0}:"{1}"'.format(x, company) for x in SEARCH_FIELDS ])
                 payload = c.search(query, IPV4_FIELDS)
             except CensysException:
                 continue
