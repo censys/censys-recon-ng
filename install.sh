@@ -1,3 +1,6 @@
+mkdir -p ~/.recon-ng/modules/recon/companies-contacts
+cp censys_email_address.py ~/.recon-ng/modules/recon/companies-contacts
+
 mkdir -p ~/.recon-ng/modules/recon/companies-domains
 cp censys_subdomains.py ~/.recon-ng/modules/recon/companies-domains
 
