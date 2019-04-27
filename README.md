@@ -22,6 +22,7 @@ These are normal recon-ng modules, use them like any other. Pivot away! This rep
 
 	  Recon
 	  -----
+    	recon/companies-contacts/censys_email_address
 	    recon/companies-domains/censys_subdomains
 	    recon/companies-hosts/censys_org
 	    recon/companies-hosts/censys_tls_subjects
@@ -29,4 +30,6 @@ These are normal recon-ng modules, use them like any other. Pivot away! This rep
 	    recon/domains-hosts/censys_domain
 	    recon/hosts-ports/censys_hostname
 	    recon/hosts-ports/censys_ip
+		recon/hosts-vulnerabilities/censys_host_vuln
+	    recon/netblocks-companies/censys_netblock_company
 	    recon/netblocks-hosts/censys_netblock

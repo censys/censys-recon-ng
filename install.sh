@@ -18,10 +18,15 @@ mkdir -p ~/.recon-ng/modules/recon/hosts-hosts
 cp censys_hostname.py ~/.recon-ng/modules/recon/hosts-hosts
 cp censys_ip.py ~/.recon-ng/modules/recon/hosts-hosts
 
+mkdir -p ~/.recon-ng/modules/recon/hosts-vulnerabilities
+cp censys_host_vuln.py ~/.recon-ng/modules/recon/hosts-vulnerabilities
+
+mkdir -p ~/.recon-ng/modules/recon/netblocks-companies
+cp censys_netblock_company.py ~/.recon-ng/modules/recon/netblocks-companies
+
 mkdir -p ~/.recon-ng/modules/recon/netblocks-hosts
 cp censys_netblock.py ~/.recon-ng/modules/recon/netblocks-hosts
 
-for key in `echo "censysio_id
-censysio_secret"`; do
+for key in censysio_id censysio_secret; do
 	echo "INSERT INTO keys (name) VALUES (\"$key\");" | sqlite3 ~/.recon-ng/keys.db
 done
