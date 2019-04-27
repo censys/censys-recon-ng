@@ -25,7 +25,7 @@ class Module(BaseModule):
         for company in companies:
             self.heading(company, level=0)
             try:
-                payload = c.search('autonomous_system.organization:"{0}"'.format(company), IPV4_FIELDS)
+                payload = c.search('autonomous_system.name:"{0}"'.format(company), IPV4_FIELDS)
             except CensysException:
                 continue
             for result in payload:
