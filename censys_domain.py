@@ -34,7 +34,7 @@ class Module(BaseModule):
                     if k.endswith('.parsed.names'):
                         for name in v:
                             names.add(name)
-                if len(names) > 0:
+                if len(names) < 1:
                     # make sure we have at least a blank name
                     names.add('')
                 for name in names:

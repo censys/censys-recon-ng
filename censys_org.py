@@ -32,7 +32,7 @@ class Module(BaseModule):
                 names = set(result.get('443.https.tls.certificate.parsed.names', []) +
                             result.get('25.smtp.starttls.tls.certificate.parsed.names', []) +
                             result.get('110.pop3.starttls.tls.certificate.parsed.names', []))
-                if len(names) == 0:
+                if len(names) < 1:
                     names.add('')
                 for name in names:
                     if name.startswith('*.'):
