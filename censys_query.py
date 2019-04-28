@@ -8,7 +8,7 @@ class Module(BaseModule):
         'name': 'Censys hosts by search terms',
         'author': 'J Nazario',
         'description': 'Retrieves details for hosts matching an arbitrary Censys query.  Updates the \'hosts\', \'domains\', and \'ports\' tables with the results.',
-        'query': 'SELECT DISTINCT host FROM hosts WHERE host IS NOT NULL LIMIT 1',
+        'query': 'SELECT COUNT(DISTINCT(host)) FROM hosts WHERE host IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],   
         'options': (
             ('CENSYS_QUERY', '80.http.get.title: "Welcome to recon-ng"', True, 'the Censys query to execute'),
@@ -40,7 +40,7 @@ class Module(BaseModule):
                 if k.endswith('.parsed.names'):
                     for name in v:
                         names.add(name)
-            if len(names) > 0:
+            if len(names) < 1:
                 # make sure we have at least a blank name
                 names.add('')
             for name in names:
