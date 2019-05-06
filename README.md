@@ -13,6 +13,8 @@ We have provided two pieces you need to install these modules and begin using th
 
 One you have completed these you can fire up `recon-ng`.
 
+Configure your Censys API ID and secret variables using `keys add` to `censysio_id` and `censysio_secret`. 
+
 ## Usage
 
 These are normal recon-ng modules, use them like any other. Pivot away! This repository adds the following new modules:
