@@ -7,6 +7,7 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys organizations by netblock',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Harvests organizations from the Censys API by searching netblocks. Updates the \'companies\' table with the results.',
         'query': 'SELECT DISTINCT netblock FROM netblocks WHERE netblock IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],
@@ -25,4 +26,4 @@ class Module(BaseModule):
             except CensysException:
                 continue
             for result in payload:
-                self.add_companies(company=result['autonomous_system.name'])
+                self.insert_companies(company=result['autonomous_system.name'])

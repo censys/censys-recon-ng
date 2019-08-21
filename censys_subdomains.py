@@ -7,6 +7,7 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys subdomains by company',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Retrieves certificates for companies, and \'domains\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],
@@ -28,4 +29,4 @@ class Module(BaseModule):
             for result in payload:
                 for name in result.get('parsed.names', []):
                     if name.startswith('*.'):
-                        self.add_domains(name.replace('*.', ''))
+                        self.insert_domains(name.replace('*.', ''))

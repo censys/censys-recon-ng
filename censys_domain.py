@@ -7,6 +7,7 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys hosts and subdomains by domain',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Retrieves the MX, SMTPS, POP3S, and HTTPS records for a domain. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],
@@ -39,14 +40,14 @@ class Module(BaseModule):
                     names.add('')
                 for name in names:
                     if name.startswith('*.'):
-                        self.add_domains(name.replace('*.', ''))
+                        self.insert_domains(name.replace('*.', ''))
                         continue
-                    self.add_hosts(host=name,
+                    self.insert_hosts(host=name,
                                    ip_address=result['ip'], 
                                    country=result.get('location.country', ''),
                                    latitude=result.get('location.latitude', ''), 
                                    longitude=result.get('location.longitude', ''))
                     for protocol in result['protocols']:
                         port, service = protocol.split('/')
-                        self.add_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
+                        self.insert_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
                 

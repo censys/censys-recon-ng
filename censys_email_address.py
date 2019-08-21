@@ -7,6 +7,7 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys hosts by domain',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Retrieves the email address from the TLS certificates for a company.  Updates the \'contacts\' table with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],        
@@ -48,4 +49,4 @@ class Module(BaseModule):
                 for k,v in result.items():
                     if k.endswith('.issuer.email_address'):
                         for e in v:
-                            self.add_contacts(email=e)
+                            self.insert_contacts(email=e)

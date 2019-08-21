@@ -7,6 +7,7 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys hosts by company',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Harvests hosts from the Censys.IO API by using the \'autonomous_system.organization\' search operator. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],        
@@ -36,13 +37,13 @@ class Module(BaseModule):
                     names.add('')
                 for name in names:
                     if name.startswith('*.'):
-                        self.add_domains(domain=name.replace('*.', ''))
+                        self.insert_domains(domain=name.replace('*.', ''))
                         continue
-                    self.add_hosts(ip_address=result['ip'],
+                    self.insert_hosts(ip_address=result['ip'],
                                    host=name,
                                    country=result.get('location.country', ''),
                                    latitude=result.get('location.latitude', ''),
                                    longitude=result.get('location.longitude', ''))
                     for protocol in result['protocols']:
                         port, service = protocol.split('/')
-                        self.add_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
+                        self.insert_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
