@@ -9,14 +9,17 @@ class Module(BaseModule):
         'author': 'J Nazario',
         'version': 1.0,
         'description': 'Retrieves details for hosts matching an arbitrary Censys query.  Updates the \'hosts\', \'domains\', and \'ports\' tables with the results.',
-        'query': 'SELECT COUNT(DISTINCT(host)) FROM hosts WHERE host IS NOT NULL',
+        'query': 'SELECT DISTINCT host FROM hosts WHERE host IS NOT NULL LIMIT 2',
         'required_keys': ['censysio_id', 'censysio_secret'],   
         'options': (
-            ('CENSYS_QUERY', '80.http.get.title: "Welcome to recon-ng"', True, 'the Censys query to execute'),
+            ('censys_query', '80.http.get.title: "Welcome to recon-ng"', True, 'The Censys query to execute'),
+        ),
+        'comments': (
+            "This ignores the query for the SOURCE option, but if you have no hosts you'll need to set it manually for this to run.",
         )
     }
 
-    def module_run(self, _):
+    def module_run(self, hosts):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
         query = self.options['censys_query']
@@ -31,9 +34,12 @@ class Module(BaseModule):
                         '110.pop3.starttls.tls.certificate.parsed.names',
                        ]
         try:
-            payload = c.search(query, fields=IPV4_FIELDS)
+            payload = list(c.search(query, fields=IPV4_FIELDS))
         except CensysException as e:
             self.error('Error seen: {0}'.format(e))
+            return
+        if len(payload) < 1:
+            self.alert("No results")
             return
         for result in payload:
             names = set()
