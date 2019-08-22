@@ -9,17 +9,13 @@ class Module(BaseModule):
         'author': 'J Nazario',
         'version': 1.0,
         'description': 'Retrieves details for hosts matching an arbitrary Censys query.  Updates the \'hosts\', \'domains\', and \'ports\' tables with the results.',
-        'query': 'SELECT DISTINCT host FROM hosts WHERE host IS NOT NULL LIMIT 2',
         'required_keys': ['censysio_id', 'censysio_secret'],   
         'options': (
             ('censys_query', '80.http.get.title: "Welcome to recon-ng"', True, 'The Censys query to execute'),
         ),
-        'comments': (
-            "This ignores the query for the SOURCE option, but if you have no hosts you'll need to set it manually for this to run.",
-        )
     }
 
-    def module_run(self, hosts):
+    def module_run(self):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
         query = self.options['censys_query']
@@ -55,10 +51,10 @@ class Module(BaseModule):
                     self.insert_domains(name.replace('*.', ''))
                     continue
                 self.insert_hosts(host=name,
-                               ip_address=result['ip'], 
-                               country=result.get('location.country', ''),
-                               latitude=result.get('location.latitude', ''), 
-                               longitude=result.get('location.longitude', ''))
+                                   ip_address=result['ip'], 
+                                   country=result.get('location.country', ''),
+                                   latitude=result.get('location.latitude', ''), 
+                                   longitude=result.get('location.longitude', ''))
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
                     self.insert_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
