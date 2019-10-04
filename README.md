@@ -19,7 +19,7 @@ Configure your Censys API ID and secret variables using `keys add` to `censysio_
 
 These are normal recon-ng modules, use them like any other. Pivot away! This repository adds the following new modules:
 
-	[recon-ng][default] > search censys
+	[recon-ng][default] > modules search censys
 	[*] Searching for 'censys'...
 
 	  Recon
