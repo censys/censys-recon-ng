@@ -1,6 +1,6 @@
 # Censys recon-ng Modules
 
-We have written several modules for [recon-ng](https://bitbucket.org/LaNMaSteR53/recon-ng) adding data via the Censys API. These were inspired by the work that @scumsec did on the original recon-ng additions from their add-on modules, and also from the subdomain enumeration techniques that use Censys data like from @christophetd. 
+We have written several modules for [recon-ng](https://github.com/lanmaster53/recon-ng) adding data via the Censys API. These were inspired by the work that @scumsec did on the original recon-ng additions from their add-on modules, and also from the subdomain enumeration techniques that use Censys data like from @christophetd. 
 
 Where possible we attempt to minimize API hits. 
 
@@ -19,7 +19,7 @@ Configure your Censys API ID and secret variables using `keys add` to `censysio_
 
 These are normal recon-ng modules, use them like any other. Pivot away! This repository adds the following new modules:
 
-	[recon-ng][default] > search censys
+	[recon-ng][default] > modules search censys
 	[*] Searching for 'censys'...
 
 	  Recon

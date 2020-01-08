@@ -18,6 +18,7 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys ports by IP',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Retrieves the open ports for each IP address. Updates the \'ports\' table with the results.',
         'query': 'SELECT DISTINCT ip_address FROM hosts WHERE ip_address IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],
@@ -37,4 +38,4 @@ class Module(BaseModule):
                 ip = result['ip']
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
-                    self.add_ports(ip_address=ip, port=port, protocol=service)
+                    self.insert_ports(ip_address=ip, port=port, protocol=service)

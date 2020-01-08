@@ -7,6 +7,7 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys companies by domain',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Retrieves the TLS certificates for a domain. Updates the \'companies\' table with the values from the subject organization information.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],
@@ -42,4 +43,4 @@ class Module(BaseModule):
                         for org in v:
                             orgs.add(org)
                 for org in orgs:
-                    self.add_companies(company=org)
+                    self.insert_companies(company=org)

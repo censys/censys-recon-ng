@@ -7,6 +7,7 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys hosts by hostname',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Finds all IPs for a given hostname. Updates the "hosts" and "ports" tables.',
         'query': 'SELECT DISTINCT host FROM hosts WHERE host IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],
@@ -25,11 +26,11 @@ class Module(BaseModule):
             except CensysException:
                 continue
             for result in payload:
-                self.add_hosts(host=host, 
+                self.insert_hosts(host=host, 
                                ip_address=result['ip'], 
                                country=result.get('location.country', ''),
                                latitude=result.get('location.latitude', ''), 
                                longitude=result.get('location.longitude', ''))
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
-                    self.add_ports(ip_address=result['ip'], port=port, protocol=service)
+                    self.insert_ports(ip_address=result['ip'], port=port, protocol=service)

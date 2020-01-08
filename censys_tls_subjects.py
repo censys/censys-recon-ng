@@ -8,6 +8,7 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys hosts by domain',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Retrieves the TLS certificates for a domain.  Updates the \'hosts\' and \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],
@@ -68,37 +69,13 @@ class Module(BaseModule):
                     names.add('')
                 for name in names:
                     if name.startswith('*.'):
-                        self.add_domains(name.replace('*.', ''))
+                        self.insert_domains(name.replace('*.', ''))
                         continue
-                    self.add_hosts(host=name,
-                                   ip_address=result['ip'],
+                    self.insert_hosts(host=name,
+                                   ip_address=result['ip'], 
                                    country=result.get('location.country', ''),
                                    latitude=result.get('location.latitude', ''),
                                    longitude=result.get('location.longitude', ''))
                     for protocol in result['protocols']:
                         port, service = protocol.split('/')
-                        self.add_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
-
-            # Certificate index query
-            try:
-                query = ' OR '.join([ '{0}:"{1}"'.format(x, company) for x in CERT_SEARCH_FIELDS ])
-                payload = c.search(query, CERT_FIELDS)
-            except CensysException:
-                continue
-            for result in payload:
-                names = set()
-                for k,v in result.items:
-                    if k == 'parsed.names':
-                        for name in v:
-                            names.add(name)
-                for name in names:
-                    if name.startswith('*.'):
-                        self.add_domains(name.replace('*.', ''))
-                        continue
-                    else:
-                        # sometimes we see IPs in the parsed.names field, handle
-                        try:
-                            socket.inet_aton(name)
-                            self.add_host(ip=name)
-                        except:
-                            self.add_hosts(host=name)
+                        self.insert_ports(ip_address=result['ip'], host=name, port=port, protocol=service)                

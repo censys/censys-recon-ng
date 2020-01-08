@@ -7,15 +7,15 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys hosts by search terms',
         'author': 'J Nazario',
+        'version': 1.0,
         'description': 'Retrieves details for hosts matching an arbitrary Censys query.  Updates the \'hosts\', \'domains\', and \'ports\' tables with the results.',
-        'query': 'SELECT COUNT(DISTINCT(host)) FROM hosts WHERE host IS NOT NULL',
         'required_keys': ['censysio_id', 'censysio_secret'],   
         'options': (
-            ('CENSYS_QUERY', '80.http.get.title: "Welcome to recon-ng"', True, 'the Censys query to execute'),
-        )
+            ('censys_query', '80.http.get.title: "Welcome to recon-ng"', True, 'The Censys query to execute'),
+        ),
     }
 
-    def module_run(self, _):
+    def module_run(self):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
         query = self.options['censys_query']
@@ -30,9 +30,12 @@ class Module(BaseModule):
                         '110.pop3.starttls.tls.certificate.parsed.names',
                        ]
         try:
-            payload = c.search(query, fields=IPV4_FIELDS)
+            payload = list(c.search(query, fields=IPV4_FIELDS))
         except CensysException as e:
             self.error('Error seen: {0}'.format(e))
+            return
+        if len(payload) < 1:
+            self.alert("No results")
             return
         for result in payload:
             names = set()
@@ -45,13 +48,13 @@ class Module(BaseModule):
                 names.add('')
             for name in names:
                 if name.startswith('*.'):
-                    self.add_domains(name.replace('*.', ''))
+                    self.insert_domains(name.replace('*.', ''))
                     continue
-                self.add_hosts(host=name,
-                               ip_address=result['ip'], 
-                               country=result.get('location.country', ''),
-                               latitude=result.get('location.latitude', ''), 
-                               longitude=result.get('location.longitude', ''))
+                self.insert_hosts(host=name,
+                                   ip_address=result['ip'], 
+                                   country=result.get('location.country', ''),
+                                   latitude=result.get('location.latitude', ''), 
+                                   longitude=result.get('location.longitude', ''))
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
-                    self.add_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
+                    self.insert_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
