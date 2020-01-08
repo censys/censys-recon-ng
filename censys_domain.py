@@ -47,7 +47,7 @@ class Module(BaseModule):
                                    country=result.get('location.country', ''),
                                    latitude=result.get('location.latitude', ''), 
                                    longitude=result.get('location.longitude', ''))
-                    for protocol in result['protocols']:
-                        port, service = protocol.split('/')
-                        self.insert_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
+                for protocol in result['protocols']:
+                    port, service = protocol.split('/')
+                    self.insert_ports(ip_address=result['ip'], host=name, port=port, protocol=service)
                 
