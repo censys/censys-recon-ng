@@ -8,6 +8,9 @@ mkdir -p ~/.recon-ng/modules/recon/companies-hosts
 cp censys_org.py ~/.recon-ng/modules/recon/companies-hosts
 cp censys_tls_subjects.py ~/.recon-ng/modules/recon/companies-hosts
 
+mkdir -p ~/.recon-ng/modules/recon/companies-netblocks
+cp censys_company_netname.py ~/.recon-ng/modules/recon/companies-netblocks
+
 mkdir -p ~/.recon-ng/modules/recon/domains-companies
 cp censys_companies.py ~/.recon-ng/modules/recon/domains-companies
 
