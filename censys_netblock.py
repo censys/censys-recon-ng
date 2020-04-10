@@ -20,6 +20,9 @@ class Module(BaseModule):
         IPV4_FIELDS = [ 'ip', 'protocols', 'location.country', 
                         'location.latitude', 'location.longitude']          
         for netblock in netblocks:
+            if ":" in netblock: 
+                # skip IPv6
+                continue
             self.heading(netblock, level=0)
             try:
                 payload = c.search('ip:{0}'.format(netblock), IPV4_FIELDS)
