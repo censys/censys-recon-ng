@@ -8,16 +8,19 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys organizations by netblock',
         'author': 'J Nazario',
-        'version': 1.0,
+        'version': '1.1',
         'description': 'Harvests organizations from the Censys API by searching netblocks. Updates the \'companies\' table with the results.',
         'query': 'SELECT DISTINCT netblock FROM netblocks WHERE netblock IS NOT NULL',
+        'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, netblocks):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(api_id, api_secret)
+        c = CensysIPv4(
+            api_id, api_secret, timeout=self._global_options['timeout']
+        )
         IPV4_FIELDS = [
             'autonomous_system.name',
         ]

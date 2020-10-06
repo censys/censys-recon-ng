@@ -8,16 +8,19 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys hosts by company',
         'author': 'J Nazario',
-        'version': 1.0,
+        'version': '1.1',
         'description': 'Harvests hosts from the Censys.IO API by using the \'autonomous_system.organization\' search operator. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
+        'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, companies):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(api_id, api_secret)
+        c = CensysIPv4(
+            api_id, api_secret, timeout=self._global_options['timeout']
+        )
         IPV4_FIELDS = [
             'ip',
             'protocols',
@@ -27,6 +30,7 @@ class Module(BaseModule):
             'location.country',
             'location.latitude',
             'location.longitude',
+            'location.province',
         ]
         for company in companies:
             self.heading(company, level=0)
@@ -56,9 +60,11 @@ class Module(BaseModule):
                         ip_address=result['ip'],
                         host=name,
                         country=result.get('location.country', ''),
+                        region=result.get('location.province', ''),
                         latitude=result.get('location.latitude', ''),
                         longitude=result.get('location.longitude', ''),
                     )
+
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
                     self.insert_ports(

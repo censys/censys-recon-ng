@@ -8,16 +8,19 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys hosts by domain',
         'author': 'J Nazario',
-        'version': 1.0,
-        'description': 'Retrieves the email address from the TLS certificates for a company.  Updates the \'contacts\' table with the results.',
+        'version': '1.1',
+        'description': 'Retrieves the email address from the TLS certificates for a company. Updates the \'contacts\' table with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
+        'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, companies):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(api_id, api_secret)
+        c = CensysIPv4(
+            api_id, api_secret, timeout=self._global_options['timeout']
+        )
         IPV4_FIELDS = [
             '443.https.tls.certificate.parsed.issuer.email_address',
             '25.smtp.starttls.tls.certificate.parsed.issuer.email_address',
@@ -35,7 +38,7 @@ class Module(BaseModule):
             '465.smtp.tls.tls.certificate.parsed.subject.organization',
             '587.smtp.starttls.tls.certificate.parsed.subject.organization',
             '1521.oracle.banner.tls.certificate.parsed.subject.organization',
-            '3306.mysql.banner.tls.certificate.parsed.subject.organizationn',
+            '3306.mysql.banner.tls.certificate.parsed.subject.organization',
             '3389.rdp.banner.tls.certificate.parsed.subject.organization',
             '5432.postgres.banner.tls.certificate.parsed.subject.organization',
             '8883.mqtt.banner.tls.certificate.parsed.subject.organization',

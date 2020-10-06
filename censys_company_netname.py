@@ -8,10 +8,11 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys networks by organization name',
         'author': 'J Nazario',
-        'version': 1.0,
+        'version': '1.1',
         'description': 'Queries Censys by autonomous system name to find networks owned by the named company.  Updates the \'networks\' table with the results.',
-        'required_keys': ['censysio_id', 'censysio_secret'],
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
+        'dependencies': ['censys'],
+        'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, companies):
@@ -27,7 +28,9 @@ class Module(BaseModule):
             pass
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(api_id, api_secret)
+        c = CensysIPv4(
+            api_id, api_secret, timeout=self._global_options['timeout']
+        )
         IPV4_FIELDS = [
             'autonomous_system.description',
             'autonomous_system.asn',

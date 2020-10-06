@@ -8,16 +8,19 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys subdomains by company',
         'author': 'J Nazario',
-        'version': 1.0,
+        'version': '1.1',
         'description': 'Retrieves certificates for companies, and \'domains\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
+        'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, companies):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysCertificates(api_id, api_secret)
+        c = CensysCertificates(
+            api_id, api_secret, timeout=self._global_options['timeout']
+        )
         SEARCH_FIELDS = [
             'parsed.subject.organization',
             'parsed.subject.organizational_unit',

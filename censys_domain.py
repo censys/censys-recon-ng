@@ -8,22 +8,26 @@ class Module(BaseModule):
     meta = {
         'name': 'Censys hosts and subdomains by domain',
         'author': 'J Nazario',
-        'version': 1.0,
+        'version': '1.1',
         'description': 'Retrieves the MX, SMTPS, POP3S, and HTTPS records for a domain. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],
     }
 
     def module_run(self, domains):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(api_id, api_secret)
+        c = CensysIPv4(
+            api_id, api_secret, timeout=self._global_options['timeout']
+        )
         IPV4_FIELDS = [
             'ip',
             'protocols',
             'location.country',
             'location.latitude',
             'location.longitude',
+            'location.province',
         ]
         SEARCH_FIELDS = [
             '443.https.tls.certificate.parsed.names',
@@ -56,9 +60,11 @@ class Module(BaseModule):
                         host=name,
                         ip_address=result['ip'],
                         country=result.get('location.country', ''),
+                        region=result.get('location.province', ''),
                         latitude=result.get('location.latitude', ''),
                         longitude=result.get('location.longitude', ''),
                     )
+
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
                     self.insert_ports(
