@@ -18,9 +18,7 @@ class Module(BaseModule):
     def module_run(self, netblocks):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(
-            api_id, api_secret, timeout=self._global_options['timeout']
-        )
+        c = CensysIPv4(api_id, api_secret, timeout=self._global_options['timeout'])
         IPV4_FIELDS = [
             'ip',
             'protocols',

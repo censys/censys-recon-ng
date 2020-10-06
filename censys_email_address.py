@@ -18,16 +18,14 @@ class Module(BaseModule):
     def module_run(self, companies):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(
-            api_id, api_secret, timeout=self._global_options['timeout']
-        )
+        c = CensysIPv4(api_id, api_secret, timeout=self._global_options['timeout'])
         IPV4_FIELDS = [
             '443.https.tls.certificate.parsed.issuer.email_address',
             '25.smtp.starttls.tls.certificate.parsed.issuer.email_address',
             '465.smtp.tls.tls.certificate.parsed.issuer.email_address',
             '587.smtp.starttls.tls.certificate.parsed.issuer.email_address',
             '1521.oracle.banner.tls.certificate.parsed.issuer.email_address',
-            '3306.mysql.banner.tls.certificate.parsed.issuer.email_addressn',
+            '3306.mysql.banner.tls.certificate.parsed.issuer.email_address',
             '3389.rdp.banner.tls.certificate.parsed.issuer.email_address',
             '5432.postgres.banner.tls.certificate.parsed.issuer.email_address',
             '8883.mqtt.banner.tls.certificate.parsed.issuer.email_address',

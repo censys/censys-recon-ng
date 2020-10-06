@@ -5,6 +5,7 @@ from recon.core.module import BaseModule
 from censys.ipv4 import CensysIPv4
 from censys.base import CensysException
 
+
 # via https://stackoverflow.com/a/8991553
 def grouper(n, iterable):
     it = iter(iterable)
@@ -29,9 +30,7 @@ class Module(BaseModule):
     def module_run(self, hosts):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(
-            api_id, api_secret, timeout=self._global_options['timeout']
-        )
+        c = CensysIPv4(api_id, api_secret, timeout=self._global_options['timeout'])
         IPV4_FIELDS = ['ip', 'protocols']
         for ips in grouper(20, hosts):
             try:
@@ -44,6 +43,4 @@ class Module(BaseModule):
                 ip = result['ip']
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
-                    self.insert_ports(
-                        ip_address=ip, port=port, protocol=service
-                    )
+                    self.insert_ports(ip_address=ip, port=port, protocol=service)

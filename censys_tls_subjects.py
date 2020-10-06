@@ -9,7 +9,8 @@ class Module(BaseModule):
         'name': 'Censys hosts by domain',
         'author': 'J Nazario',
         'version': '1.1',
-        'description': 'Retrieves the TLS certificates for a domain. Updates the \'hosts\' and \'ports\' tables with the results.',
+        'description': 'Retrieves the TLS certificates for a domain. \
+            Updates the \'hosts\' and \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
         'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],
@@ -18,9 +19,7 @@ class Module(BaseModule):
     def module_run(self, companies):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(
-            api_id, api_secret, timeout=self._global_options['timeout']
-        )
+        c = CensysIPv4(api_id, api_secret, timeout=self._global_options['timeout'])
         IPV4_FIELDS = [
             'ip',
             'protocols',

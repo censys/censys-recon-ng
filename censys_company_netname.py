@@ -1,4 +1,5 @@
 from recon.core.module import BaseModule
+from recon.core.framework import FrameworkException
 
 from censys.ipv4 import CensysIPv4
 from censys.base import CensysException
@@ -23,14 +24,12 @@ class Module(BaseModule):
         # we really like to know netnames so we alter the schema ...
         try:
             self.query('ALTER TABLE netblocks ADD COLUMN netname TEXT')
-        except:
+        except FrameworkException:
             # probably been here before
             pass
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(
-            api_id, api_secret, timeout=self._global_options['timeout']
-        )
+        c = CensysIPv4(api_id, api_secret, timeout=self._global_options['timeout'])
         IPV4_FIELDS = [
             'autonomous_system.description',
             'autonomous_system.asn',
@@ -54,17 +53,13 @@ class Module(BaseModule):
                 else:
                     seen.add(asn)
                     bgpview_url = 'https://api.bgpview.io/asn/{0}/prefixes'
-                    routes = self.request(
-                        'GET', bgpview_url.format(asn)
-                    ).json()
+                    routes = self.request('GET', bgpview_url.format(asn)).json()
                     for route in routes['data']['ipv4_prefixes']:
                         self.insert_netblocks(route['prefix'])
                         # XXX have to do this because we insert this data ourselves
                         self.query(
                             'UPDATE netblocks SET netname = "{0}" WHERE netblock = "{1}"'.format(
-                                result.get(
-                                    'autonomous_system.description', ''
-                                ),
+                                result.get('autonomous_system.description', ''),
                                 route['prefix'],
                             )
                         )
