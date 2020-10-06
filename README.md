@@ -1,5 +1,7 @@
 # Censys recon-ng Modules
 
+[![Code Style](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
+
 We have written several modules for [`recon-ng`](https://github.com/lanmaster53/recon-ng) adding data via the Censys API. These were inspired by the work that [@scumsec](https://github.com/scumsec/Recon-ng-modules) did on the original recon-ng additions from their add-on modules, and also from the subdomain enumeration techniques that use Censys data like from [@christophetd](https://github.com/christophetd/censys-subdomain-finder).
 
 ## Installation

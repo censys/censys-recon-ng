@@ -9,10 +9,11 @@ from censys.base import CensysNotFoundException
 def grouper(n, iterable):
     it = iter(iterable)
     while True:
-       chunk = tuple(itertools.islice(it, n))
-       if not chunk:
-           return
-       yield chunk
+        chunk = tuple(itertools.islice(it, n))
+        if not chunk:
+            return
+        yield chunk
+
 
 class Module(BaseModule):
     meta = {
@@ -27,15 +28,19 @@ class Module(BaseModule):
     def module_run(self, hosts):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(api_id, api_secret)   
-        IPV4_FIELDS = [ 'ip', 'protocols']
+        c = CensysIPv4(api_id, api_secret)
+        IPV4_FIELDS = ['ip', 'protocols']
         for ips in grouper(20, hosts):
             try:
-                results = c.search(' OR '.join([ 'ip:{0}'.format(x) for x in ips ]), IPV4_FIELDS)
+                results = c.search(
+                    ' OR '.join(['ip:{0}'.format(x) for x in ips]), IPV4_FIELDS
+                )
             except CensysException:
                 continue
             for result in results:
                 ip = result['ip']
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
-                    self.insert_ports(ip_address=ip, port=port, protocol=service)
+                    self.insert_ports(
+                        ip_address=ip, port=port, protocol=service
+                    )

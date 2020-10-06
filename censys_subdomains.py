@@ -3,6 +3,7 @@ from recon.core.module import BaseModule
 from censys.certificates import CensysCertificates
 from censys.base import CensysException
 
+
 class Module(BaseModule):
     meta = {
         'name': 'Censys subdomains by company',
@@ -17,13 +18,20 @@ class Module(BaseModule):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
         c = CensysCertificates(api_id, api_secret)
-        SEARCH_FIELDS = [ 'parsed.subject.organization', 'parsed.subject.organizational_unit', ]
-        CERT_FIELDS = ['parsed.names', ]          
+        SEARCH_FIELDS = [
+            'parsed.subject.organization',
+            'parsed.subject.organizational_unit',
+        ]
+        CERT_FIELDS = [
+            'parsed.names',
+        ]
         for company in companies:
             self.heading(company, level=0)
             try:
-                query = ' OR '.join([ '{0}:"{1}"'.format(x, company) for x in SEARCH_FIELDS ])
-                payload = c.search(query, CERT_FIELDS) 
+                query = ' OR '.join(
+                    ['{0}:"{1}"'.format(x, company) for x in SEARCH_FIELDS]
+                )
+                payload = c.search(query, CERT_FIELDS)
             except CensysException:
                 continue
             for result in payload:

@@ -3,6 +3,7 @@ from recon.core.module import BaseModule
 from censys.ipv4 import CensysIPv4
 from censys.base import CensysException
 
+
 class Module(BaseModule):
     meta = {
         'name': 'Censys hosts by hostname',
@@ -17,8 +18,13 @@ class Module(BaseModule):
         api_id = self.get_key('censysio_id')
         api_secret = self.get_key('censysio_secret')
         c = CensysIPv4(api_id, api_secret)
-        IPV4_FIELDS = [ 'ip', 'protocols', 'location.country', 
-                        'location.latitude', 'location.longitude']        
+        IPV4_FIELDS = [
+            'ip',
+            'protocols',
+            'location.country',
+            'location.latitude',
+            'location.longitude',
+        ]
         for host in hosts:
             self.heading(host, level=0)
             try:
@@ -26,11 +32,15 @@ class Module(BaseModule):
             except CensysException:
                 continue
             for result in payload:
-                self.insert_hosts(host=host, 
-                               ip_address=result['ip'], 
-                               country=result.get('location.country', ''),
-                               latitude=result.get('location.latitude', ''), 
-                               longitude=result.get('location.longitude', ''))
+                self.insert_hosts(
+                    host=host,
+                    ip_address=result['ip'],
+                    country=result.get('location.country', ''),
+                    latitude=result.get('location.latitude', ''),
+                    longitude=result.get('location.longitude', ''),
+                )
                 for protocol in result['protocols']:
                     port, service = protocol.split('/')
-                    self.insert_ports(ip_address=result['ip'], port=port, protocol=service)
+                    self.insert_ports(
+                        ip_address=result['ip'], port=port, protocol=service
+                    )
