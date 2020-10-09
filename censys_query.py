@@ -9,8 +9,7 @@ class Module(BaseModule):
         'name': 'Censys hosts by search terms',
         'author': 'J Nazario',
         'version': '1.1',
-        'description': 'Retrieves details for hosts matching an arbitrary Censys query. \
-            Updates the \'hosts\', \'domains\', and \'ports\' tables with the results.',
+        'description': 'Retrieves details for hosts matching an arbitrary Censys query. Updates the \'hosts\', \'domains\', and \'ports\' tables with the results.',
         'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],
         'options': (

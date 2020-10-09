@@ -9,9 +9,7 @@ class Module(BaseModule):
         'name': 'Censys hosts by company',
         'author': 'J Nazario',
         'version': '1.1',
-        'description': 'Harvests hosts from the Censys.IO API by using the \
-            \'autonomous_system.organization\' search operator. \
-                Updates the \'hosts\' and the \'ports\' tables with the results.',
+        'description': 'Harvests hosts from the Censys.IO API by using the \'autonomous_system.organization\' search operator. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
         'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],

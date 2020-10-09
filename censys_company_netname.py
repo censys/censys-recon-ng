@@ -10,7 +10,7 @@ class Module(BaseModule):
         'name': 'Censys networks by organization name',
         'author': 'J Nazario',
         'version': '1.1',
-        'description': 'Queries Censys by autonomous system name to find networks owned by the named company.  Updates the \'networks\' table with the results.',
+        'description': 'Queries Censys by autonomous system name to find networks owned by the named company. Updates the \'networks\' table with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
         'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],

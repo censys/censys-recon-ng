@@ -9,8 +9,7 @@ class Module(BaseModule):
         'name': 'Censys hosts by domain',
         'author': 'J Nazario',
         'version': '1.1',
-        'description': 'Retrieves the TLS certificates for a domain. \
-            Updates the \'hosts\' and \'ports\' tables with the results.',
+        'description': 'Retrieves the TLS certificates for a domain. Updates the \'hosts\' and \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
         'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],

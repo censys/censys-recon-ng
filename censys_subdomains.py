@@ -9,8 +9,7 @@ class Module(BaseModule):
         'name': 'Censys subdomains by company',
         'author': 'J Nazario',
         'version': '1.1',
-        'description': 'Retrieves certificates for companies, and \'domains\' tables \
-            with the results.',
+        'description': 'Retrieves certificates for companies, and \'domains\' tables with the results.',
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
         'dependencies': ['censys'],
         'required_keys': ['censysio_id', 'censysio_secret'],
