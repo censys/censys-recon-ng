@@ -1,35 +1,42 @@
-mkdir -p ~/.recon-ng/modules/recon/companies-contacts
-cp censys_email_address.py ~/.recon-ng/modules/recon/companies-contacts
+#!/usr/bin/env bash
 
-mkdir -p ~/.recon-ng/modules/recon/companies-domains
-cp censys_subdomains.py ~/.recon-ng/modules/recon/companies-domains
+RECON_DIR=~/.recon-ng/modules/recon
 
-mkdir -p ~/.recon-ng/modules/recon/companies-hosts
-cp censys_org.py ~/.recon-ng/modules/recon/companies-hosts
-cp censys_tls_subjects.py ~/.recon-ng/modules/recon/companies-hosts
+mkdir -p $RECON_DIR/companies-contacts
+cp censys_email_address.py $RECON_DIR/companies-contacts
 
-mkdir -p ~/.recon-ng/modules/recon/companies-netblocks
-cp censys_company_netname.py ~/.recon-ng/modules/recon/companies-netblocks
+mkdir -p $RECON_DIR/companies-domains
+cp censys_subdomains.py $RECON_DIR/companies-domains
 
-mkdir -p ~/.recon-ng/modules/recon/domains-companies
-cp censys_companies.py ~/.recon-ng/modules/recon/domains-companies
+mkdir -p $RECON_DIR/companies-multi
+cp censys_org.py $RECON_DIR/companies-multi
+cp censys_tls_subjects.py $RECON_DIR/companies-multi
 
-mkdir -p ~/.recon-ng/modules/recon/domains-hosts
-cp censys_domain.py ~/.recon-ng/modules/recon/domains-hosts
+mkdir -p $RECON_DIR/contacts-domains
+cp censys_email_to_domains.py $RECON_DIR/contacts-domains
 
-mkdir -p ~/.recon-ng/modules/recon/hosts-hosts
-cp censys_query.py ~/.recon-ng/modules/recon/hosts-hosts
+mkdir -p $RECON_DIR/domains-companies
+cp censys_companies.py $RECON_DIR/domains-companies
 
-mkdir -p ~/.recon-ng/modules/recon/hosts-ports
-cp censys_hostname.py ~/.recon-ng/modules/recon/hosts-ports
-cp censys_ip.py ~/.recon-ng/modules/recon/hosts-ports
+mkdir -p $RECON_DIR/domains-hosts
+cp censys_domain.py $RECON_DIR/domains-hosts
 
-mkdir -p ~/.recon-ng/modules/recon/netblocks-companies
-cp censys_netblock_company.py ~/.recon-ng/modules/recon/netblocks-companies
+mkdir -p $RECON_DIR/hosts-hosts
+cp censys_query.py $RECON_DIR/hosts-hosts
 
-mkdir -p ~/.recon-ng/modules/recon/netblocks-hosts
-cp censys_netblock.py ~/.recon-ng/modules/recon/netblocks-hosts
+mkdir -p $RECON_DIR/hosts-ports
+cp censys_hostname.py $RECON_DIR/hosts-ports
+cp censys_ip.py $RECON_DIR/hosts-ports
+
+mkdir -p $RECON_DIR/netblocks-companies
+cp censys_netblock_company.py $RECON_DIR/netblocks-companies
+
+mkdir -p $RECON_DIR/netblocks-hosts
+cp censys_netblock.py $RECON_DIR/netblocks-hosts
 
 for key in censysio_id censysio_secret; do
-	echo "INSERT INTO keys (name) VALUES (\"$key\");" | sqlite3 ~/.recon-ng/keys.db
+	echo "INSERT or IGNORE INTO keys (name) VALUES (\"$key\");" | sqlite3 ~/.recon-ng/keys.db
 done
+
+echo "Successfully installed Censys recon-ng modules."
+exit 0

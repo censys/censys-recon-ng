@@ -1,83 +1,66 @@
 from recon.core.module import BaseModule
 
-from censys.ipv4 import CensysIPv4
-from censys.base import CensysException
+from censys.search import CensysHosts
+from censys.common.exceptions import CensysException
 
 
 class Module(BaseModule):
     meta = {
-        'name': 'Censys hosts by domain',
-        'author': 'J Nazario',
-        'version': '1.1',
-        'description': 'Retrieves the TLS certificates for a domain. \
-            Updates the \'hosts\' and \'ports\' tables with the results.',
-        'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
-        'dependencies': ['censys'],
-        'required_keys': ['censysio_id', 'censysio_secret'],
+        "name": "Censys - Domains by Company",
+        "author": "Censys, Inc. <support@censys.io>",
+        "version": 2.1,
+        "description": (
+            "Retrieves the TLS certificates for a domain. This module queries"
+            " the 'services.tls.certificates.leaf_data.subject.organization'"
+            " field and updates the 'hosts' and 'ports' tables with the"
+            " results."
+        ),
+        "query": (
+            "SELECT DISTINCT company FROM companies WHERE company IS NOT NULL"
+        ),
+        "required_keys": ["censysio_id", "censysio_secret"],
+        "dependencies": ["censys>=2.1.2"],
     }
 
     def module_run(self, companies):
-        api_id = self.get_key('censysio_id')
-        api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(api_id, api_secret, timeout=self._global_options['timeout'])
-        IPV4_FIELDS = [
-            'ip',
-            'protocols',
-            'location.country',
-            'location.latitude',
-            'location.longitude',
-            'location.province',
-            '443.https.tls.certificate.parsed.names',
-            '25.smtp.starttls.tls.certificate.parsed.names',
-            '110.pop3.starttls.tls.certificate.parsed.names',
-        ]
-        SEARCH_FIELDS = [
-            '443.https.tls.certificate.parsed.subject.organization',
-            '25.smtp.starttls.tls.certificate.parsed.subject.organization',
-            '465.smtp.tls.tls.certificate.parsed.subject.organization',
-            '587.smtp.starttls.tls.certificate.parsed.subject.organization',
-            '1521.oracle.banner.tls.certificate.parsed.subject.organization',
-            '3306.mysql.banner.tls.certificate.parsed.subject.organization',
-            '3389.rdp.banner.tls.certificate.parsed.subject.organization',
-            '5432.postgres.banner.tls.certificate.parsed.subject.organization',
-            '8883.mqtt.banner.tls.certificate.parsed.subject.organization',
-        ]
+        api_id = self.get_key("censysio_id")
+        api_secret = self.get_key("censysio_secret")
+        c = CensysHosts(api_id, api_secret)
         for company in companies:
+            company = company.strip('"')
             self.heading(company, level=0)
             try:
-                query = ' OR '.join(
-                    ['{0}:"{1}"'.format(x, company) for x in SEARCH_FIELDS]
+                query = c.search(
+                    f'services.tls.certificates.leaf_data.subject.organization:"{company}"',
+                    virtual_hosts="INCLUDE",
                 )
-                payload = c.search(query, IPV4_FIELDS)
             except CensysException:
+                self.print_exception()
                 continue
-            for result in payload:
-                names = set()
-                for k, v in result.items():
-                    if k.endswith('.parsed.names'):
-                        for name in v:
-                            names.add(name)
-                if len(names) < 1:
-                    # make sure we have at least a blank name
-                    names.add('')
-                for name in names:
-                    if name.startswith('*.'):
-                        self.insert_domains(name.replace('*.', ''))
-                        continue
-                    self.insert_hosts(
-                        host=name,
-                        ip_address=result['ip'],
-                        country=result.get('location.country', ''),
-                        region=result.get('location.province', ''),
-                        latitude=result.get('location.latitude', ''),
-                        longitude=result.get('location.longitude', ''),
+            for hit in query():
+                ip = hit["ip"]
+                name = hit.get("name")
+                if name:
+                    self.insert_domains(
+                        domain=name, notes="+".join((ip, name))
                     )
-
-                for protocol in result['protocols']:
-                    port, service = protocol.split('/')
+                common_kwargs = {
+                    "ip_address": ip,
+                    "host": name,
+                }
+                location = hit.get("location", {})
+                coords = location.get("coordinates", {})
+                self.insert_hosts(
+                    region=location.get("continent"),
+                    country=location.get("country"),
+                    latitude=coords.get("latitude"),
+                    longitude=coords.get("longitude"),
+                    **common_kwargs,
+                )
+                for service in hit.get("services", []):
                     self.insert_ports(
-                        ip_address=result['ip'],
-                        host=name,
-                        port=port,
-                        protocol=service,
+                        port=service["port"],
+                        protocol=service["transport_protocol"],
+                        notes=service["service_name"],
+                        **common_kwargs,
                     )

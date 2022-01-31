@@ -2,12 +2,12 @@ import itertools
 
 from recon.core.module import BaseModule
 
-from censys.ipv4 import CensysIPv4
-from censys.base import CensysException
+from censys.search import CensysHosts
+from censys.common.exceptions import CensysException
 
 
-# via https://stackoverflow.com/a/8991553
 def grouper(n, iterable):
+    # via https://stackoverflow.com/a/8991553
     it = iter(iterable)
     while True:
         chunk = tuple(itertools.islice(it, n))
@@ -18,29 +18,38 @@ def grouper(n, iterable):
 
 class Module(BaseModule):
     meta = {
-        'name': 'Censys ports by IP',
-        'author': 'J Nazario',
-        'version': '1.1',
-        'description': 'Retrieves the open ports for each IP address. Updates the \'ports\' table with the results.',
-        'query': 'SELECT DISTINCT ip_address FROM hosts WHERE ip_address IS NOT NULL',
-        'dependencies': ['censys'],
-        'required_keys': ['censysio_id', 'censysio_secret'],
+        "name": "Censys - Ports by IP",
+        "author": "Censys, Inc. <support@censys.io>",
+        "version": 2.1,
+        "description": (
+            "Retrieves the open ports for each IP address. "
+            "Updates the 'ports' table with the results."
+        ),
+        "query": (
+            "SELECT DISTINCT ip_address FROM hosts WHERE ip_address IS NOT"
+            " NULL"
+        ),
+        "required_keys": ["censysio_id", "censysio_secret"],
+        "dependencies": ["censys>=2.1.2"],
     }
 
     def module_run(self, hosts):
-        api_id = self.get_key('censysio_id')
-        api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(api_id, api_secret, timeout=self._global_options['timeout'])
-        IPV4_FIELDS = ['ip', 'protocols']
-        for ips in grouper(20, hosts):
+        api_id = self.get_key("censysio_id")
+        api_secret = self.get_key("censysio_secret")
+        c = CensysHosts(api_id, api_secret)
+        for ip in hosts:
+            ip = ip.strip('"')
+            self.heading(ip, level=0)
             try:
-                results = c.search(
-                    ' OR '.join(['ip:{0}'.format(x) for x in ips]), IPV4_FIELDS
-                )
+                host = c.view(ip)
             except CensysException:
+                self.print_exception()
                 continue
-            for result in results:
-                ip = result['ip']
-                for protocol in result['protocols']:
-                    port, service = protocol.split('/')
-                    self.insert_ports(ip_address=ip, port=port, protocol=service)
+            for service in host.get("services", []):
+                self.insert_ports(
+                    ip_address=ip,
+                    port=service["port"],
+                    protocol=service["transport_protocol"],
+                    banner=service.get("banner"),
+                    notes=service["service_name"],
+                )

@@ -1,62 +1,54 @@
 from recon.core.module import BaseModule
 
-from censys.ipv4 import CensysIPv4
-from censys.base import CensysException
+from censys.search import CensysHosts
+from censys.common.exceptions import CensysException
 
 
 class Module(BaseModule):
     meta = {
-        'name': 'Censys companies by domain',
-        'author': 'J Nazario',
-        'version': '1.1',
-        'description': 'Retrieves the TLS certificates for a domain. Updates the \'companies\' table with the values from the subject organization information.',
-        'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
-        'dependencies': ['censys'],
-        'required_keys': ['censysio_id', 'censysio_secret'],
+        "name": "Censys - Companies by Domain",
+        "author": "Censys, Inc. <support@censys.io>",
+        "version": 2.1,
+        "description": (
+            "Retrieves the TLS certificates for a domain. This module queries"
+            " the  'services.tls.certificates.leaf_data.names' field and"
+            " updates the 'companies' table with the results."
+        ),
+        "query": (
+            "SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL"
+        ),
+        "options": [
+            (
+                "num_buckets",
+                "100",
+                False,
+                "maximum number of buckets to retrieve",
+            )
+        ],
+        "required_keys": ["censysio_id", "censysio_secret"],
+        "dependencies": ["censys>=2.1.2"],
     }
 
     def module_run(self, domains):
-        api_id = self.get_key('censysio_id')
-        api_secret = self.get_key('censysio_secret')
-        c = CensysIPv4(api_id, api_secret, timeout=self._global_options['timeout'])
-        IPV4_FIELDS = [
-            '443.https.tls.certificate.parsed.subject.organization',
-            '25.smtp.starttls.tls.certificate.parsed.subject.organization',
-            '110.pop3.starttls.tls.certificate.parsed.subject.organization',
-            '465.smtp.tls.tls.certificate.parsed.subject.organization',
-            '587.smtp.starttls.tls.certificate.parsed.subject.organization',
-            '1521.oracle.banner.tls.certificate.parsed.subject.organization',
-            '3306.mysql.banner.tls.certificate.parsed.subject.organization',
-            '3389.rdp.banner.tls.certificate.parsed.subject.organization',
-            '5432.postgres.banner.tls.certificate.parsed.subject.organization',
-            '8883.mqtt.banner.tls.certificate.parsed.subject.organization',
-        ]
-        SEARCH_FIELDS = [
-            '443.https.tls.certificate.parsed.names',
-            '25.smtp.starttls.tls.certificate.parsed.names',
-            '110.pop3.starttls.tls.certificate.parsed.names',
-            '465.smtp.tls.tls.certificate.parsed.names',
-            '587.smtp.starttls.tls.certificate.parsed.names',
-            '1521.oracle.banner.tls.certificate.parsed.names',
-            '3306.mysql.banner.tls.certificate.parsed.names',
-            '3389.rdp.banner.tls.certificate.parsed.names',
-            '5432.postgres.banner.tls.certificate.parsed.names',
-            '8883.mqtt.banner.tls.certificate.parsed.names',
-        ]
+        api_id = self.get_key("censysio_id")
+        api_secret = self.get_key("censysio_secret")
+        c = CensysHosts(api_id, api_secret)
         for domain in domains:
+            domain = domain.strip('"')
             self.heading(domain, level=0)
             try:
-                query = 'mx:"{0}" OR '.format(domain) + ' OR '.join(
-                    ['{0}:"{1}"'.format(x, domain) for x in SEARCH_FIELDS]
+                report = c.aggregate(
+                    "same_service(services.tls.certificates.leaf_data.names:"
+                    f" {domain} and"
+                    " services.tls.certificates.leaf_data.subject.organization: *)",
+                    field="services.tls.certificates.leaf_data.subject.organization",
+                    num_buckets=int(self.options.get("NUM_BUCKETS", "100")),
                 )
-                payload = c.search(query, IPV4_FIELDS)
             except CensysException:
+                self.print_exception()
                 continue
-            for result in payload:
-                orgs = set()
-                for k, v in result.items():
-                    if k.endswith('.parsed.subject.organization'):
-                        for org in v:
-                            orgs.add(org)
-                for org in orgs:
-                    self.insert_companies(company=org)
+            for bucket in report.get("buckets", []):
+                company = bucket.get("key")
+                self.insert_companies(
+                    company=company, description=f"Domain: {domain}"
+                )

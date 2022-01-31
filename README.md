@@ -1,4 +1,4 @@
-# Censys recon-ng Modules
+# Censys `recon-ng` Modules
 
 [![License](https://img.shields.io/github/license/censys/censys-recon-ng)](LICENSE)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
@@ -12,7 +12,7 @@ We have written several modules for [`recon-ng`](https://github.com/lanmaster53/
 We have provided two pieces you need to install these modules and begin using them.
 
 - `requirements.txt` - Use this via `pip install -r requirements.txt` to install Python dependencies.
-- `install.sh`- Run this script and it will both install the modules in your home directory (recon-ng supports modules added for the local user in `~/.recon-ng`) and configures the database to add support for your Censys API ID and secret. See your Censys [account](https://censys.io/account/api) for your credentials, and add them to the database as you would any other credential - `keys add ...`.
+- `install.sh`- Run this script and it will both install the modules in your home directory (recon-ng supports modules added for the local user in `~/.recon-ng`) and configures the database to add support for your Censys API ID and secret. See your Censys [account](https://search.censys.io/account/api) for your credentials, and add them to the database as you would any other credential - `keys add ...`.
 
 One you have completed these you can fire up `recon-ng`.
 
@@ -30,8 +30,9 @@ These are normal recon-ng modules, use them like any other. Pivot away! This rep
   -----
     recon/companies-contacts/censys_email_address
     recon/companies-domains/censys_subdomains
-    recon/companies-hosts/censys_org
-    recon/companies-hosts/censys_tls_subjects
+    recon/companies-multi/censys_org
+    recon/companies-multi/censys_tls_subjects
+    recon/contacts-domains/censys_email_to_domains
     recon/domains-companies/censys_companies
     recon/domains-hosts/censys_domain
     recon/hosts-hosts/censys_query
