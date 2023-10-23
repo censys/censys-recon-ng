@@ -10,7 +10,7 @@ class Module(BaseModule):
         "author": "Censys, Inc. <support@censys.io>",
         "version": 2.1,
         "description": (
-            "Retrieves hosts and ports for a neyblock. "
+            "Retrieves hosts and ports for a netblock. "
             "Updates the 'hosts' and the 'ports' tables with the results."
         ),
         "query": (
